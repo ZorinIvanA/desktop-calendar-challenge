@@ -74,7 +74,8 @@ public sealed class MonitorService : IMonitorService
                 connector: identity.Connector,
                 displayName: identity.DisplayName,
                 logicalIndex: identity.LogicalIndex,
-                screen: best.Screen));
+                screen: best.Screen,
+                identityBounds: identity.Bounds));
         }
 
         return result;
@@ -108,19 +109,25 @@ public sealed class MonitorService : IMonitorService
     }
 
     private static MonitorInfo ToMonitorInfo(
-        string id, string? connector, string? displayName, int logicalIndex, ScreenGeometry screen)
+        string id, string? connector, string? displayName, int logicalIndex, ScreenGeometry screen,
+        ScreenRect? identityBounds = null)
     {
         var friendly = BuildFriendlyName(connector, displayName, logicalIndex, screen);
+        // Приоритет источника bounds для нормализации в UI-схеме:
+        // - identityBounds (Windows GetMonitorRECT / физические пиксели виртуального десктопа),
+        //   когда они ненулевые — дают корректные позиции при multi-monitor со смещением/DPI.
+        // - иначе screen.Bounds (Avalonia, Linux Mutter отдаёт только координаты без размера).
+        var bounds = (identityBounds is { } ib && ib.Width > 0 && ib.Height > 0) ? ib : screen.Bounds;
         return new MonitorInfo(
             Id: id,
             LogicalIndex: logicalIndex,
             FriendlyName: friendly,
-            BoundsX: screen.Bounds.X,
-            BoundsY: screen.Bounds.Y,
-            BoundsWidth: screen.Bounds.Width,
-            BoundsHeight: screen.Bounds.Height,
-            ResolutionWidth: screen.Bounds.Width,
-            ResolutionHeight: screen.Bounds.Height,
+            BoundsX: bounds.X,
+            BoundsY: bounds.Y,
+            BoundsWidth: bounds.Width,
+            BoundsHeight: bounds.Height,
+            ResolutionWidth: screen.Bounds.Width > 0 ? screen.Bounds.Width : bounds.Width,
+            ResolutionHeight: screen.Bounds.Height > 0 ? screen.Bounds.Height : bounds.Height,
             IsPrimary: screen.IsPrimary,
             Scaling: screen.Scaling);
     }
