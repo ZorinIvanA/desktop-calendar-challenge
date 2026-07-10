@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <!-- COM IDesktopWallpaper требует Windows-TFM на реальной Windows (иначе BadImageFormatException).
-         На Linux собираемся под net8.0 с define WINDOWS_LITE (заглушки, чтобы solution компилировался
-         для кроссплатформенной разработки; Platform.Windows реально вызывается только на Windows). -->
-    <TargetFramework Condition="'$(OS)' == 'Windows'">net8.0-windows</TargetFramework>
-    <TargetFramework Condition="'$(OS)' != 'Windows'">net8.0</TargetFramework>
-    <DefineConstants Condition="'$(OS)' != 'Windows'">$(DefineConstants);WINDOWS_LITE</DefineConstants>
+         MSBuild $(OS): Windows_NT (Windows) / Linux / Unix (mac). На не-Windows собираемся под net8.0
+         с define WINDOWS_LITE (заглушки, чтобы solution компилировался для кроссплатформенной разработки;
+         Platform.Windows реально вызывается только на Windows). -->
+    <TargetFramework Condition="'$(OS)' == 'Windows_NT'">net8.0-windows</TargetFramework>
+    <TargetFramework Condition="'$(OS)' != 'Windows_NT'">net8.0</TargetFramework>
+    <DefineConstants Condition="'$(OS)' != 'Windows_NT'">$(DefineConstants);WINDOWS_LITE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
