@@ -17,4 +17,7 @@ public interface IWallpaperService
 
     /// <summary>Текущий режим растяжения ОС для монитора.</summary>
     WallpaperFit ParseCurrentFit(string monitorId);
+
+    /// <summary>Установить режим растяжения ОС для монитора (1:1 Center при apply, восстановление при remove).</summary>
+    void SetFit(string monitorId, WallpaperFit fit);
 }

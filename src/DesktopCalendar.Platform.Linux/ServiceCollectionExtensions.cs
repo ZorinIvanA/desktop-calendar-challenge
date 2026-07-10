@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddLinux(this IServiceCollection services)
     {
         services.AddSingleton<MutterDisplayConfig>();
+        services.AddSingleton<GnomeGsettings>();
         services.AddSingleton<IMonitorIdentityProvider, LinuxMonitorIdentityProvider>();
         services.AddSingleton<IWallpaperService, LinuxWallpaperService>();
         services.AddSingleton<IAutorunService, LinuxAutorunService>();

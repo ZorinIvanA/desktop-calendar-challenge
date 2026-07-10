@@ -5,6 +5,8 @@ namespace DesktopCalendar.Core.Contracts;
 /// </summary>
 public enum WallpaperFit
 {
+    /// <summary>Нет изображения / сплошной цвет (GNOME 'none'). На Windows аналог — Center с пустым файлом.</summary>
+    None,
     /// <summary>Заполнить с обрезкой (Windows: Fill, GNOME: zoom).</summary>
     Fill,
     /// <summary>Вписать с полями (Windows: Fit, GNOME: scaled).</summary>

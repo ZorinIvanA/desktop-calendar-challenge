@@ -41,6 +41,10 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<IGeometryProvider>(),
                 sp.GetService<IMonitorIdentityProvider>()));
 
+        // WallpaperApplier — оркестратор apply/remove (M4). IWallpaperService/IMonitorService
+        // регистрируются платформенными проектами.
+        services.AddSingleton<Wallpaper.WallpaperApplier>();
+
         return services;
     }
 }
