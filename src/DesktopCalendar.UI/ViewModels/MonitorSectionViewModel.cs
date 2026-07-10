@@ -2,19 +2,18 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DesktopCalendar.Core.Contracts;
-using DesktopCalendar.Core.Settings;
 using Microsoft.Extensions.Logging;
 
 namespace DesktopCalendar.UI.ViewModels;
 
 /// <summary>
 /// Раздел «Монитор»: список мониторов с визуальной схемой, выбор целевого.
-/// В M2 — единственный рабочий раздел; остальные добавятся в M5.
+/// В M5 пишет выбор через SettingsViewModel (чтобы превью и HasCalendar обновлялись реактивно).
 /// </summary>
 public partial class MonitorSectionViewModel : ObservableObject
 {
     private readonly IMonitorService _monitorService;
-    private readonly AppSettings _settings;
+    private readonly SettingsViewModel _settings;
     private readonly ILogger<MonitorSectionViewModel> _logger;
 
     public ObservableCollection<MonitorViewModel> Monitors { get; } = new();
@@ -25,7 +24,7 @@ public partial class MonitorSectionViewModel : ObservableObject
 
     public MonitorSectionViewModel(
         IMonitorService monitorService,
-        AppSettings settings,
+        SettingsViewModel settings,
         ILogger<MonitorSectionViewModel> logger)
     {
         _monitorService = monitorService;
@@ -46,7 +45,6 @@ public partial class MonitorSectionViewModel : ObservableObject
                 Monitors.Add(new MonitorViewModel(m, layout));
             }
 
-            // Подсветить текущий выбранный.
             var currentId = _settings.TargetMonitorId;
             SelectedMonitor = string.IsNullOrEmpty(currentId)
                 ? null
@@ -75,10 +73,7 @@ public partial class MonitorSectionViewModel : ObservableObject
         foreach (var m in Monitors) m.IsSelected = false;
         monitor.IsSelected = true;
         SelectedMonitor = monitor;
+        // Пишем через SettingsViewModel — это поднимет Changed и обновит превью + HasCalendar.
         _settings.TargetMonitorId = monitor.Id;
-
-        // Сохранение debounce'ится в ISettingsStore; Persist() при закрытии окна флашит.
-        // Здесь только помечаем settings «грязным» — фактический save через магазин.
-        // (MainViewModel.Persist вызывается на OnClosed окна.)
     }
 }

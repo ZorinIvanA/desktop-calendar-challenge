@@ -16,9 +16,14 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IGeometryProvider, AvaloniaScreenGeometryProvider>();
 
-        // AppSettings — синглтон на сессию: читаем один раз при старте, в M5 редактируем в UI.
+        // AppSettings + SettingsViewModel — синглтоны на сессию.
         services.AddSingleton(sp => sp.GetRequiredService<ISettingsStore>().Load());
+        services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<MonitorSectionViewModel>();
+        services.AddSingleton<LayoutSectionViewModel>();
+        services.AddSingleton<CalendarSectionViewModel>();
+        services.AddSingleton<GeneralSectionViewModel>();
+        services.AddSingleton<PreviewViewModel>();
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
         return services;

@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DesktopCalendar.UI.ViewModels"
+             x:Class="DesktopCalendar.UI.Views.GeneralSectionView">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16">
+
+            <TextBlock Text="Общие" FontSize="22" FontWeight="SemiBold" />
+
+            <!-- Автозапуск (дизейблен до M6) -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    CornerRadius="8" Padding="14">
+                <StackPanel Spacing="6">
+                    <CheckBox Content="Запускать вместе с системой (M6)"
+                              IsChecked="{Binding Autorun}" IsEnabled="False" />
+                    <TextBlock Text="Автозагрузка будет реализована в M6. Чекбокс показан для целостности интерфейса."
+                               Foreground="Gray" TextWrapping="Wrap" FontSize="11" />
+                </StackPanel>
+            </Border>
+
+            <!-- Применение календаря -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    CornerRadius="8" Padding="14">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Календарь на рабочем столе" FontWeight="SemiBold" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Установить календарь сейчас"
+                                Command="{Binding ApplyCommand}"
+                                IsVisible="{Binding IsApplyVisible}" />
+                        <Button Content="Убрать календарь"
+                                Command="{Binding RemoveCommand}"
+                                IsVisible="{Binding IsRemoveVisible}" />
+                    </StackPanel>
+
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="4" />
+
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="Gray" TextWrapping="Wrap" />
+
+                    <!-- Плашка "выберите монитор" -->
+                    <Border Background="#FFFCE8B2" BorderBrush="#FFE0A800" BorderThickness="1"
+                            CornerRadius="6" Padding="10" IsVisible="{Binding !CanApply}">
+                        <TextBlock Text="Сначала выберите целевой монитор в разделе «Монитор»."
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

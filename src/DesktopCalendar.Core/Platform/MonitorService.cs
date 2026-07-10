@@ -51,11 +51,14 @@ public sealed class MonitorService : IMonitorService
 
         foreach (var identity in identities.OrderBy(id => id.LogicalIndex))
         {
+            // Сшивка: оцениваем совпадение identity и Avalonia-экрана.
+            // Используем пересечение bounds; если identity имеет нулевые размеры
+            // (Mutter отдаёт только X,Y без разрешения) — fallback на попадание точки.
             var best = screens
                 .Where(s => !usedScreens.Contains(s))
-                .Select(s => (Screen: s, Inter: s.Bounds.Intersect(identity.Bounds)))
-                .Where(t => t.Inter is not null)
-                .OrderByDescending(t => t.Inter!.Value.Area)
+                .Select(s => (Screen: s, Score: MatchScore(s.Bounds, identity.Bounds)))
+                .Where(t => t.Score > 0)
+                .OrderByDescending(t => t.Score)
                 .FirstOrDefault();
 
             if (best.Screen is null)
@@ -79,6 +82,30 @@ public sealed class MonitorService : IMonitorService
 
     public MonitorInfo? GetById(string id)
         => GetMonitors().FirstOrDefault(m => m.Id == id);
+
+    /// <summary>
+    /// Оценка совпадения identity-bounds и Avalonia-screen-bounds.
+    /// Возвращает площадь пересечения (>0 = совпали), либо 1 при попадании точки
+    /// (X,Y) identity в экран (для случая, когда identity имеет нулевые размеры —
+    /// Mutter отдаёт только координаты logical-monitor без разрешения).
+    /// 0 = нет совпадения.
+    /// </summary>
+    private static long MatchScore(ScreenRect screen, ScreenRect identity)
+    {
+        var inter = screen.Intersect(identity);
+        if (inter is { } rect && rect.Area > 0)
+        {
+            return rect.Area;
+        }
+        // Fallback: точка (X,Y) identity попадает в экран?
+        if (identity.Width <= 0 || identity.Height <= 0
+            && identity.X >= screen.X && identity.X < screen.Right
+            && identity.Y >= screen.Y && identity.Y < screen.Bottom)
+        {
+            return 1;
+        }
+        return 0;
+    }
 
     private static MonitorInfo ToMonitorInfo(
         string id, string? connector, string? displayName, int logicalIndex, ScreenGeometry screen)

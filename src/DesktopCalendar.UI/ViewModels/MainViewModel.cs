@@ -1,50 +1,74 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DesktopCalendar.Core.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace DesktopCalendar.UI.ViewModels;
 
 /// <summary>
-/// Корневая ViewModel: навигация по разделам и持有ание настроек.
-/// В M2 активен только раздел «Монитор»; остальные добавятся в M5.
+/// Корневая ViewModel: навигация по разделам, общий SettingsViewModel.
+/// Превью вынесено в PreviewViewModel (общий синглтон для разделов Layout/Calendar).
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
     private readonly ISettingsStore _store;
     private readonly AppSettings _settings;
+    private readonly ILogger<MainViewModel> _logger;
 
-    /// <summary>Раздел «Монитор».</summary>
+    public SettingsViewModel Settings { get; }
     public MonitorSectionViewModel MonitorSection { get; }
+    public LayoutSectionViewModel LayoutSection { get; }
+    public CalendarSectionViewModel CalendarSection { get; }
+    public GeneralSectionViewModel GeneralSection { get; }
+    public PreviewViewModel Preview { get; }
 
-    /// <summary>Доступные разделы для sidebar.</summary>
     public IReadOnlyList<string> Sections { get; } = new[] { "Монитор", "Расположение", "Календарь", "Общие" };
 
     [ObservableProperty] private int _selectedSectionIndex = 0;
 
-    // Видимость разделов — производные от SelectedSectionIndex. XAML не умеет == в биндинге,
-    // поэтому暴露им булевы свойства.
-    public bool IsMonitorVisible => SelectedSectionIndex == 0;
-    public bool IsLayoutVisible => SelectedSectionIndex == 1;
-    public bool IsCalendarVisible => SelectedSectionIndex == 2;
-    public bool IsGeneralVisible => SelectedSectionIndex == 3;
+    /// <summary>Активная section-ViewModel для ContentControl (DataTemplate по типу).</summary>
+    public object ActiveSection => SelectedSectionIndex switch
+    {
+        0 => MonitorSection,
+        1 => LayoutSection,
+        2 => CalendarSection,
+        3 => GeneralSection,
+        _ => MonitorSection,
+    };
 
-    public MainViewModel(AppSettings settings, ISettingsStore store, MonitorSectionViewModel monitorSection)
+    partial void OnSelectedSectionIndexChanged(int value) => OnPropertyChanged(nameof(ActiveSection));
+
+    public MainViewModel(
+        AppSettings settings,
+        ISettingsStore store,
+        MonitorSectionViewModel monitorSection,
+        LayoutSectionViewModel layoutSection,
+        CalendarSectionViewModel calendarSection,
+        GeneralSectionViewModel generalSection,
+        PreviewViewModel preview,
+        ILogger<MainViewModel> logger)
     {
         _settings = settings;
         _store = store;
+        _logger = logger;
+
+        Settings = new SettingsViewModel(settings);
         MonitorSection = monitorSection;
+        LayoutSection = layoutSection;
+        CalendarSection = calendarSection;
+        GeneralSection = generalSection;
+        Preview = preview;
     }
 
-    partial void OnSelectedSectionIndexChanged(int value)
+    /// <summary>Вызывается из MainWindow.OnOpened: окно создано, можно инициализировать разделы.</summary>
+    public void OnWindowOpened()
     {
-        OnPropertyChanged(nameof(IsMonitorVisible));
-        OnPropertyChanged(nameof(IsLayoutVisible));
-        OnPropertyChanged(nameof(IsCalendarVisible));
-        OnPropertyChanged(nameof(IsGeneralVisible));
+        MonitorSection.LoadMonitors();
+        GeneralSection.Initialize();
+        Preview.Initialize();
+        Settings.Changed += (_, _) => GeneralSection.RefreshHasCalendar();
     }
 
-    /// <summary>
-    /// Сохранить текущие настройки через debounced store.
-    /// </summary>
+    /// <summary>Сохранить настройки на закрытии.</summary>
     public void Persist()
     {
         _store.Save(_settings);

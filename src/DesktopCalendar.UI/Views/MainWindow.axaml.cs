@@ -1,12 +1,12 @@
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using DesktopCalendar.UI.ViewModels;
 
 namespace DesktopCalendar.UI.Views;
 
 /// <summary>
-/// Главное окно. DataContext = MainViewModel (через DI). При открытии — загружаем список
-/// мониторов (TopLevel уже создан, Avalonia Screens доступен). При закрытии — сохраняем настройки.
+/// Главное окно. DataContext = MainViewModel (через DI). При открытии — инициализирует
+/// разделы и превью (TopLevel уже создан, Avalonia Screens доступен).
+/// При закрытии — сохраняет настройки.
 /// </summary>
 public partial class MainWindow : Window
 {
@@ -23,11 +23,9 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-
-        // Окно создано → TopLevel.Screens доступен → пора перечислить мониторы.
         if (DataContext is MainViewModel vm)
         {
-            vm.MonitorSection.LoadMonitors();
+            vm.OnWindowOpened();
         }
     }
 
@@ -39,7 +37,6 @@ public partial class MainWindow : Window
             vm.Persist();
         }
 
-        // Persist() кладёт значение в debounced store — форсируем немедленную запись.
         if (UI.App.Services.GetService(typeof(Core.Settings.DebouncedSettingsStore))
             is Core.Settings.DebouncedSettingsStore debounced)
         {

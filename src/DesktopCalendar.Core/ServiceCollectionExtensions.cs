@@ -45,6 +45,10 @@ public static class ServiceCollectionExtensions
         // регистрируются платформенными проектами.
         services.AddSingleton<Wallpaper.WallpaperApplier>();
 
+        // M5: каталог шрифтов и рендерер превью.
+        services.AddSingleton<Fonts.IFontCatalog, Fonts.SkiaFontCatalog>();
+        services.AddSingleton<Wallpaper.PreviewRenderer>();
+
         return services;
     }
 }

@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DesktopCalendar.UI.ViewModels"
+             xmlns:v="using:DesktopCalendar.UI.Views"
+             x:Class="DesktopCalendar.UI.Views.CalendarSectionView">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16">
+
+            <TextBlock Text="Календарь" FontSize="22" FontWeight="SemiBold" />
+
+            <Grid ColumnDefinitions="*,420" Margin="0,8,0,0">
+
+                <!-- Настройки -->
+                <StackPanel Grid.Column="0" Spacing="14">
+
+                    <!-- Шрифт -->
+                    <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                            CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Шрифт" FontWeight="SemiBold" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Семейство:" VerticalAlignment="Center" Width="100" Foreground="Gray" />
+                                <ComboBox ItemsSource="{Binding FontFamilies}"
+                                          SelectedItem="{Binding SelectedFontFamily}" MinWidth="220" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Размер (pt):" VerticalAlignment="Center" Width="100" Foreground="Gray" />
+                                <NumericUpDown Value="{Binding FontSize}" Minimum="6" Maximum="200"
+                                               Increment="1" Width="120" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Цвета -->
+                    <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                            CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Цвета" FontWeight="SemiBold" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Месяц:" VerticalAlignment="Center" Width="120" Foreground="Gray" />
+                                <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding ColorMonth}" Width="120" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Дни недели:" VerticalAlignment="Center" Width="120" Foreground="Gray" />
+                                <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding ColorWeekday}" Width="120" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Дни:" VerticalAlignment="Center" Width="120" Foreground="Gray" />
+                                <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding ColorDay}" Width="120" />
+                            </StackPanel>
+
+                            <CheckBox Content="Выделять сегодняшний день"
+                                      IsChecked="{Binding HighlightToday}" Margin="0,8,0,0" />
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="24,0,0,0"
+                                        IsEnabled="{Binding HighlightToday}">
+                                <TextBlock Text="Цвет:" VerticalAlignment="Center" Width="100" Foreground="Gray" />
+                                <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding ColorToday}" Width="120" />
+                            </StackPanel>
+
+                            <CheckBox Content="Выделять выходные" IsChecked="{Binding HighlightWeekend}" Margin="0,4,0,0" />
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="24,0,0,0"
+                                        IsEnabled="{Binding HighlightWeekend}">
+                                <TextBlock Text="Цвет:" VerticalAlignment="Center" Width="100" Foreground="Gray" />
+                                <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding ColorWeekend}" Width="120" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Дни соседних месяцев -->
+                    <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                            CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Дни соседних месяцев" FontWeight="SemiBold" />
+                            <RadioButton Content="Показывать" GroupName="OtherMonth"
+                                         IsChecked="{Binding OtherMonthMode, Converter={x:Static v:OtherMonthModeToBoolConverter.Instance}, ConverterParameter=Show, Mode=TwoWay}" />
+                            <RadioButton Content="Скрывать" GroupName="OtherMonth"
+                                         IsChecked="{Binding OtherMonthMode, Converter={x:Static v:OtherMonthModeToBoolConverter.Instance}, ConverterParameter=Hide, Mode=TwoWay}" />
+                            <RadioButton Content="Прозрачность" GroupName="OtherMonth"
+                                         IsChecked="{Binding OtherMonthMode, Converter={x:Static v:OtherMonthModeToBoolConverter.Instance}, ConverterParameter=CustomOpacity, Mode=TwoWay}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="24,0,0,0"
+                                        IsVisible="{Binding IsOpacityVisible}">
+                                <TextBlock Text="Прозрачность:" VerticalAlignment="Center" Foreground="Gray" />
+                                <Slider Minimum="0" Maximum="100" Value="{Binding OtherMonthOpacity}" Width="220" />
+                                <TextBlock Text="{Binding OtherMonthOpacity}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Подписи -->
+                    <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                            CornerRadius="8" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Подписи месяца и дней недели" FontWeight="SemiBold" />
+                            <RadioButton Content="Сверху от блока дней" GroupName="Labels"
+                                         IsChecked="{Binding LabelsPosition, Converter={x:Static v:LabelsPositionToBoolConverter.Instance}, ConverterParameter=Top, Mode=TwoWay}" />
+                            <RadioButton Content="Снизу от блока дней" GroupName="Labels"
+                                         IsChecked="{Binding LabelsPosition, Converter={x:Static v:LabelsPositionToBoolConverter.Instance}, ConverterParameter=Bottom, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Превью -->
+                <Border Grid.Column="1" Background="#22000000" BorderBrush="Gray" BorderThickness="1"
+                        CornerRadius="8" Padding="8" Margin="16,0,0,0" VerticalAlignment="Top">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Превью" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                        <Image Name="PreviewImage" Stretch="Uniform" MaxHeight="360" HorizontalAlignment="Center"
+                               Source="{Binding Preview.Bitmap}" />
+                        <TextBlock Text="{Binding Preview.Status}" Foreground="Gray"
+                                   HorizontalAlignment="Center" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

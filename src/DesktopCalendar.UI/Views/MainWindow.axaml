@@ -4,7 +4,7 @@
         xmlns:views="using:DesktopCalendar.UI.Views"
         x:Class="DesktopCalendar.UI.Views.MainWindow"
         Title="Desktop Calendar"
-        Width="880" Height="640"
+        Width="1000" Height="700"
         WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
@@ -31,25 +31,22 @@
             </DockPanel>
         </Border>
 
-        <!-- Область контента: переключается по SelectedSectionIndex -->
-        <Panel Grid.Column="1">
-            <views:MonitorSectionView IsVisible="{Binding IsMonitorVisible}" />
-            <!-- Разделы 1..3 — заглушки до M5 -->
-            <StackPanel IsVisible="{Binding IsLayoutVisible}"
-                        VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
-                <TextBlock Text="Расположение" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                <TextBlock Text="Будет реализовано в M5" Foreground="Gray" HorizontalAlignment="Center" />
-            </StackPanel>
-            <StackPanel IsVisible="{Binding IsCalendarVisible}"
-                        VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
-                <TextBlock Text="Календарь" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                <TextBlock Text="Будет реализовано в M5" Foreground="Gray" HorizontalAlignment="Center" />
-            </StackPanel>
-            <StackPanel IsVisible="{Binding IsGeneralVisible}"
-                        VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
-                <TextBlock Text="Общие" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                <TextBlock Text="Будет реализовано в M5/M6" Foreground="Gray" HorizontalAlignment="Center" />
-            </StackPanel>
-        </Panel>
+        <!-- Область контента: DataTemplate-селектор по типу активной section-VM -->
+        <ContentControl Grid.Column="1" Content="{Binding ActiveSection}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="{x:Type vm:MonitorSectionViewModel}">
+                    <views:MonitorSectionView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:LayoutSectionViewModel}">
+                    <views:LayoutSectionView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:CalendarSectionViewModel}">
+                    <views:CalendarSectionView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:GeneralSectionViewModel}">
+                    <views:GeneralSectionView />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
     </Grid>
 </Window>

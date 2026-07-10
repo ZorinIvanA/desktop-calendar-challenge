@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform;
 using DesktopCalendar.Core.Platform;
+using Microsoft.Extensions.Logging;
 
 namespace DesktopCalendar.UI.Platform;
 
@@ -13,19 +14,26 @@ namespace DesktopCalendar.UI.Platform;
 /// </summary>
 public sealed class AvaloniaScreenGeometryProvider : IGeometryProvider
 {
+    private readonly ILogger<AvaloniaScreenGeometryProvider> _logger;
+
+    public AvaloniaScreenGeometryProvider(ILogger<AvaloniaScreenGeometryProvider> logger)
+    {
+        _logger = logger;
+    }
+
     public IReadOnlyList<ScreenGeometry> GetScreens()
     {
         var topLevel = GetTopLevel();
         if (topLevel is null)
         {
-            // До создания окна (напр. в silent-режиме M6) геометрия недоступна.
-            // monitor id там уже сохранён, и она не нужна — возвращаем пусто.
+            _logger.LogWarning("AvaloniaScreenGeometryProvider: TopLevel is null (no window yet?)");
             return Array.Empty<ScreenGeometry>();
         }
 
         var screens = topLevel.Screens;
         if (screens is null || screens.ScreenCount == 0)
         {
+            _logger.LogWarning("AvaloniaScreenGeometryProvider: no screens available");
             return Array.Empty<ScreenGeometry>();
         }
 

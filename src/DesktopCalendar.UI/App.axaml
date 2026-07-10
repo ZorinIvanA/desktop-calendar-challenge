@@ -4,5 +4,20 @@
              RequestedThemeVariant="Light">
     <Application.Styles>
         <FluentTheme />
+        <!-- Стиль для точек привязки в разделе «Расположение» -->
+        <Style Selector="RepeatButton.anchor">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Margin" Value="-14,-14" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#CCFFFFFF" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Content" Value="" />
+        </Style>
+        <Style Selector="RepeatButton.anchor:pointerover">
+            <Setter Property="Background" Value="Orange" />
+        </Style>
     </Application.Styles>
 </Application>
