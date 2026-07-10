@@ -1,14 +1,13 @@
+using System.Runtime.Versioning;
 using DesktopCalendar.Core.Contracts;
+using Microsoft.Win32;
 
 namespace DesktopCalendar.Platform.Windows;
-
-#if !WINDOWS_LITE
-using System.Runtime.Versioning;
-using Microsoft.Win32;
 
 /// <summary>
 /// Windows-реализация IAutorunService через HKCU\Software\Microsoft\Windows\CurrentVersion\Run.
 /// Per-user, без прав администратора. Значение = "&lt;exe&gt; -auto".
+/// Microsoft.Win32.Registry доступен через NuGet-пакет в plain net8.0.
 /// </summary>
 [SupportedOSPlatform("windows")]
 public sealed class WindowsAutorunService : IAutorunService
@@ -36,14 +35,3 @@ public sealed class WindowsAutorunService : IAutorunService
         key?.DeleteValue(ValueName, throwOnMissingValue: false);
     }
 }
-#else
-/// <summary>Заглушка для сборки на Linux (WINDOWS_LITE).</summary>
-public sealed class WindowsAutorunService : IAutorunService
-{
-    public bool IsEnabled() => false;
-    public void Enable(string executablePath, string arguments)
-        => throw new PlatformNotSupportedException("Windows registry доступен только при сборке под Windows.");
-    public void Disable()
-        => throw new PlatformNotSupportedException();
-}
-#endif

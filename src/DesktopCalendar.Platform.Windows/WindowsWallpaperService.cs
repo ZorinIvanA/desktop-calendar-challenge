@@ -1,11 +1,9 @@
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using DesktopCalendar.Core.Contracts;
 using DesktopCalendar.Core.Wallpaper;
 
 namespace DesktopCalendar.Platform.Windows;
-
-#if !WINDOWS_LITE
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 /// <summary>
 /// Windows-реализация IWallpaperService через COM IDesktopWallpaper.
@@ -64,18 +62,3 @@ public sealed class WindowsWallpaperService : IWallpaperService
         finally { Marshal.ReleaseComObject(wallpaper); }
     }
 }
-#else
-/// <summary>Заглушка для сборки на Linux (WINDOWS_LITE).</summary>
-public sealed class WindowsWallpaperService : IWallpaperService
-{
-    public WallpaperSnapshot GetCurrent(string monitorId)
-        => throw new PlatformNotSupportedException("Windows COM доступен только при сборке под Windows.");
-    public void SetWallpaper(string monitorId, string imageFilePath)
-        => throw new PlatformNotSupportedException();
-    public string? GetOriginalPath(string monitorId) => null;
-    public WallpaperFit ParseCurrentFit(string monitorId)
-        => throw new PlatformNotSupportedException();
-    public void SetFit(string monitorId, WallpaperFit fit)
-        => throw new PlatformNotSupportedException();
-}
-#endif

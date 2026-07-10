@@ -1,12 +1,11 @@
-#if !WINDOWS_LITE
 using System.Runtime.InteropServices;
 
 namespace DesktopCalendar.Platform.Windows;
 
 /// <summary>
 /// CLSID coclass DesktopWallpaper (shobjidl_core.h). Вынесен в отдельный класс, а не в
-/// COM-интерфейс: статическое поле внутри [ComImport]-интерфейса — нетипично и на некоторых
-/// конфигурациях вызывает BadImageFormatException в ..cctor при первой загрузке типа.
+/// COM-интерфейс: статическое поле внутри [ComImport]-интерфейса вызывает BadImageFormatException
+/// в ..cctor при первой загрузке типа.
 /// </summary>
 public static class DesktopWallpaperClsid
 {
@@ -21,6 +20,9 @@ public static class DesktopWallpaperClsid
 /// https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-idesktopwallpaper
 /// ВАЖНО: GetMonitorDevicePathAt ИДЁТ ДО GetMonitorDevicePathCount.
 /// Интерфейс содержит ТОЛЬКО методы (никаких полей — иначе CLR падает на ..cctor).
+///
+/// Работает на plain net8.0: COM-вызовы (Type.GetTypeFromCLSID + Activator.CreateInstance)
+/// корректны, т.к. Clsid вынесен из [ComImport]-интерфейса.
 /// </summary>
 [ComImport]
 [Guid("B92B56A9-8B55-4E14-9A89-0199BBB6F93B")]
@@ -64,4 +66,3 @@ public struct Rect
     public int right;
     public int bottom;
 }
-#endif

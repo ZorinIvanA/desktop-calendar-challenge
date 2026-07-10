@@ -1,13 +1,12 @@
+using System.Runtime.Versioning;
 using DesktopCalendar.Core.Platform;
 
 namespace DesktopCalendar.Platform.Windows;
 
-#if !WINDOWS_LITE
-using System.Runtime.Versioning;
-
 /// <summary>
 /// Windows-источник стабильных идентификаторов мониторов через COM IDesktopWallpaper.
 /// Device path из GetMonitorDevicePathAt — тот же ключ, что использует SetWallpaper в M4.
+/// Геометрия здесь не нужна (она из Avalonia) — передаём только bounds для сшивки в MonitorService.
 /// </summary>
 [SupportedOSPlatform("windows")]
 public sealed class WindowsMonitorIdentityProvider : IMonitorIdentityProvider
@@ -47,14 +46,3 @@ public sealed class WindowsMonitorIdentityProvider : IMonitorIdentityProvider
     private static string? ExtractConnector(string devicePath)
         => string.IsNullOrWhiteSpace(devicePath) ? null : devicePath;
 }
-#else
-/// <summary>
-/// Заглушка для сборки на Linux (WINDOWS_LITE): COM недоступен вне Windows-TFM.
-/// На Linux реально не вызывается — AddWindows()注册уется только при OperatingSystem.IsWindows().
-/// </summary>
-public sealed class WindowsMonitorIdentityProvider : IMonitorIdentityProvider
-{
-    public IReadOnlyList<MonitorIdentity> GetIdentities()
-        => throw new PlatformNotSupportedException("Windows COM доступен только при сборке под Windows.");
-}
-#endif

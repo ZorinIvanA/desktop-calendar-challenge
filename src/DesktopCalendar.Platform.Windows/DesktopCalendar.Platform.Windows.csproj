@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- COM IDesktopWallpaper требует Windows-TFM на реальной Windows (иначе BadImageFormatException).
-         MSBuild $(OS): Windows_NT (Windows) / Linux / Unix (mac). На не-Windows собираемся под net8.0
-         с define WINDOWS_LITE (заглушки, чтобы solution компилировался для кроссплатформенной разработки;
-         Platform.Windows реально вызывается только на Windows). -->
-    <TargetFramework Condition="'$(OS)' == 'Windows_NT'">net8.0-windows</TargetFramework>
-    <TargetFramework Condition="'$(OS)' != 'Windows_NT'">net8.0</TargetFramework>
-    <DefineConstants Condition="'$(OS)' != 'Windows_NT'">$(DefineConstants);WINDOWS_LITE</DefineConstants>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Microsoft.Win32.Registry: в plain net8.0 типы Registry недоступны без этого пакета
+         (в net8.0-windows они в Windows shared framework, но мы намеренно на plain net8.0). -->
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DesktopCalendar.Core\DesktopCalendar.Core.csproj" />
