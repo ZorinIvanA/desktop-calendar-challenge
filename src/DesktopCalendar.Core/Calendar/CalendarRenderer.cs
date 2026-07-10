@@ -159,25 +159,24 @@ public sealed class CalendarRenderer : IDisposable
             for (int col = 0; col < 7; col++)
             {
                 var cell = model.Grid[row][col];
-                if (!cell.IsCurrentMonth)
+
+                // Соседние дни в режиме Hide не рисуются вовсе.
+                if (!cell.IsCurrentMonth && settings.OtherMonthMode == OtherMonthMode.Hide)
                 {
-                    switch (settings.OtherMonthMode)
-                    {
-                        case OtherMonthMode.Hide:
-                            continue; // не рисуем
-                        case OtherMonthMode.CustomOpacity:
-                            paint.Color = settings.ColorDay.ToSkColor()
-                                .WithOpacityPercent(settings.OtherMonthOpacity);
-                            break;
-                        default: // Show
-                            paint.Color = settings.ColorDay.ToSkColor();
-                            break;
-                    }
+                    continue;
                 }
-                else
+
+                // Базовый цвет по приоритету today > weekend > day — для ВСЕХ ячеек,
+                // включая соседние месяцы (выходные подсвечиваются по всей сетке).
+                var baseColor = ResolveCellColor(cell, settings);
+
+                // Для соседних месяцев — применяем OtherMonth-режим к цвету.
+                if (!cell.IsCurrentMonth && settings.OtherMonthMode == OtherMonthMode.CustomOpacity)
                 {
-                    paint.Color = ResolveCellColor(cell, settings);
+                    baseColor = baseColor.WithOpacityPercent(settings.OtherMonthOpacity);
                 }
+
+                paint.Color = baseColor;
 
                 var text = cell.Day.ToString();
                 font.MeasureText(text, out var db, paint);

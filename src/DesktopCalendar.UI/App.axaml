@@ -4,11 +4,12 @@
              RequestedThemeVariant="Light">
     <Application.Styles>
         <FluentTheme />
-        <!-- Стиль для точек привязки в разделе «Расположение» -->
+        <!-- Стиль для точек привязки в разделе «Расположение».
+             28×28; Canvas-координаты в LayoutSectionView задают левый-верхний угол,
+             рассчитаны так, чтобы ЦЕНТР точки лежал на угле/ребре/центре экрана. -->
         <Style Selector="RepeatButton.anchor">
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="28" />
-            <Setter Property="Margin" Value="-14,-14" />
             <Setter Property="CornerRadius" Value="14" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="#CCFFFFFF" />

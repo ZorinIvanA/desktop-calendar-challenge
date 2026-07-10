@@ -21,31 +21,32 @@
                         <Border Canvas.Left="20" Canvas.Top="15" Width="240" Height="150"
                                 BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Background="#11000000"/>
 
-                        <!-- 8 кнопок-точек привязки, позиционированных по сетке 3×3 без центра -->
-                        <RepeatButton Classes="anchor" Canvas.Left="20" Canvas.Top="15"
+                        <!-- 8 кнопок-точек привязки. Координаты = левый-верхний угол кнопки 28×28,
+                             ЦЕНТР кнопки совмещён с углом/ребром/центром экрана 240×150 на (20,15). -->
+                        <RepeatButton Classes="anchor" Canvas.Left="6" Canvas.Top="1"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.TopLeft}" />
-                        <RepeatButton Classes="anchor" Canvas.Left="130" Canvas.Top="15"
+                        <RepeatButton Classes="anchor" Canvas.Left="126" Canvas.Top="1"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.TopCenter}" />
-                        <RepeatButton Classes="anchor" Canvas.Left="240" Canvas.Top="15"
+                        <RepeatButton Classes="anchor" Canvas.Left="246" Canvas.Top="1"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.TopRight}" />
 
-                        <RepeatButton Classes="anchor" Canvas.Left="20" Canvas.Top="82"
+                        <RepeatButton Classes="anchor" Canvas.Left="6" Canvas.Top="76"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.CenterLeft}" />
-                        <RepeatButton Classes="anchor" Canvas.Left="240" Canvas.Top="82"
+                        <RepeatButton Classes="anchor" Canvas.Left="246" Canvas.Top="76"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.CenterRight}" />
 
-                        <RepeatButton Classes="anchor" Canvas.Left="20" Canvas.Top="149"
+                        <RepeatButton Classes="anchor" Canvas.Left="6" Canvas.Top="151"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.BottomLeft}" />
-                        <RepeatButton Classes="anchor" Canvas.Left="130" Canvas.Top="149"
+                        <RepeatButton Classes="anchor" Canvas.Left="126" Canvas.Top="151"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.BottomCenter}" />
-                        <RepeatButton Classes="anchor" Canvas.Left="240" Canvas.Top="149"
+                        <RepeatButton Classes="anchor" Canvas.Left="246" Canvas.Top="151"
                                       Command="{Binding $parent[UserControl].DataContext.SelectAnchorCommand}"
                                       CommandParameter="{x:Static s:Anchor.BottomRight}" />
                     </Canvas>
