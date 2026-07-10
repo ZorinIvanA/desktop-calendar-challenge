@@ -19,7 +19,7 @@ public sealed class WindowsMonitorIdentityProvider : IMonitorIdentityProvider
             return Array.Empty<MonitorIdentity>();
         }
 
-        var wallpaper = (IDesktopWallpaper)Activator.CreateInstance(Type.GetTypeFromCLSID(IDesktopWallpaper.Clsid)!)!;
+        var wallpaper = (IDesktopWallpaper)Activator.CreateInstance(Type.GetTypeFromCLSID(DesktopWallpaperClsid.Value)!)!;
         try
         {
             var count = wallpaper.GetMonitorDevicePathCount();

@@ -16,7 +16,7 @@ public sealed class WindowsWallpaperService : IWallpaperService
 {
     private static IDesktopWallpaper CreateCom()
     {
-        var type = Type.GetTypeFromCLSID(IDesktopWallpaper.Clsid)
+        var type = Type.GetTypeFromCLSID(DesktopWallpaperClsid.Value)
                    ?? throw new InvalidOperationException("DesktopWallpaper COM CLSID not found.");
         return (IDesktopWallpaper)Activator.CreateInstance(type)!;
     }
