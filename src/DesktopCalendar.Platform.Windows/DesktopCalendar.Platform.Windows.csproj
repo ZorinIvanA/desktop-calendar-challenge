@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <!-- COM IDesktopWallpaper требует Windows-TFM на реальной Windows (иначе BadImageFormatException).
+         На Linux собираемся под net8.0 с define WINDOWS_LITE (заглушки, чтобы solution компилировался
+         для кроссплатформенной разработки; Platform.Windows реально вызывается только на Windows). -->
+    <TargetFramework Condition="'$(OS)' == 'Windows'">net8.0-windows</TargetFramework>
+    <TargetFramework Condition="'$(OS)' != 'Windows'">net8.0</TargetFramework>
+    <DefineConstants Condition="'$(OS)' != 'Windows'">$(DefineConstants);WINDOWS_LITE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

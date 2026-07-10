@@ -1,8 +1,10 @@
-using System.Runtime.Versioning;
 using DesktopCalendar.Core.Contracts;
-using Microsoft.Win32;
 
 namespace DesktopCalendar.Platform.Windows;
+
+#if !WINDOWS_LITE
+using System.Runtime.Versioning;
+using Microsoft.Win32;
 
 /// <summary>
 /// Windows-реализация IAutorunService через HKCU\Software\Microsoft\Windows\CurrentVersion\Run.
@@ -24,7 +26,6 @@ public sealed class WindowsAutorunService : IAutorunService
     {
         if (!OperatingSystem.IsWindows()) return;
         using var key = Registry.CurrentUser.CreateSubKey(RunKeyPath);
-        // Путь в кавычках на случай пробелов, затем аргументы.
         key.SetValue(ValueName, $"\"{executablePath}\" {arguments}");
     }
 
@@ -35,3 +36,14 @@ public sealed class WindowsAutorunService : IAutorunService
         key?.DeleteValue(ValueName, throwOnMissingValue: false);
     }
 }
+#else
+/// <summary>Заглушка для сборки на Linux (WINDOWS_LITE).</summary>
+public sealed class WindowsAutorunService : IAutorunService
+{
+    public bool IsEnabled() => false;
+    public void Enable(string executablePath, string arguments)
+        => throw new PlatformNotSupportedException("Windows registry доступен только при сборке под Windows.");
+    public void Disable()
+        => throw new PlatformNotSupportedException();
+}
+#endif

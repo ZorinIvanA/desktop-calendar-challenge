@@ -70,7 +70,7 @@
                 </ItemsControl>
             </Border>
 
-            <TextBlock Text="{Binding StatusMessage}" Foreground="Gray" />
+            <TextBlock Text="{Binding StatusMessage}" Foreground="Gray" TextWrapping="Wrap" />
 
             <!-- Детали выбранного монитора -->
             <Border IsVisible="{Binding SelectedMonitor, Converter={x:Static ObjectConverters.IsNotNull}}"

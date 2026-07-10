@@ -1,3 +1,4 @@
+#if !WINDOWS_LITE
 using System.Runtime.InteropServices;
 
 namespace DesktopCalendar.Platform.Windows;
@@ -35,9 +36,6 @@ public interface IDesktopWallpaper
 
     void SetPosition(DesktopWallpaperPosition position);
     DesktopWallpaperPosition GetPosition();
-
-    // Методы далее объявлены для полноты vtable (используются редко); нам в M4 не нужны.
-    // Не объявляем — интерфейс можно оборвать, неиспользуемые слоты vtable недоступны и это безопасно.
 }
 
 /// <summary>DESKTOP_WALLPAPER_POSITION enum (shobjidl_core.h).</summary>
@@ -60,3 +58,4 @@ public struct Rect
     public int right;
     public int bottom;
 }
+#endif

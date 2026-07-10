@@ -59,7 +59,7 @@ public partial class MonitorSectionViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to enumerate monitors.");
-            StatusMessage = $"Ошибка получения списка мониторов: {ex.Message}";
+            StatusMessage = $"Ошибка получения списка мониторов: {ex.Message}. Подробности — в логе (app.log).";
             IsGnomeWarningVisible = false;
         }
     }
