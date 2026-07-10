@@ -9,9 +9,9 @@ namespace DesktopCalendar.Core;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Регистрирует OS-агностичное ядро: пути, настройки (JSON + debounce).
-    /// IMonitorService / IWallpaperService / IAutorunService регистрируются
-    /// платформенными проектами (AddWindows / AddLinux).
+    /// Регистрирует OS-агностичное ядро: пути, настройки (JSON + debounce), MonitorService.
+    /// IGeometryProvider регистрируется UI-проектом (AddUi), IMonitorIdentityProvider —
+    /// платформенными проектами (AddWindows / AddLinux); оба опциональны для degraded-режима.
     /// </summary>
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
@@ -34,6 +34,14 @@ public static class ServiceCollectionExtensions
         // ISettingsStore указывает на декоратор, чтобы UI получал debounce "из коробки".
         services.AddSingleton<ISettingsStore>(sp => sp.GetRequiredService<DebouncedSettingsStore>());
 
+        // MonitorService собирается из IGeometryProvider (обязателен) и IMonitorIdentityProvider
+        // (опционален: null → degraded-режим без стабильного id).
+        services.AddSingleton<IMonitorService>(sp =>
+            new MonitorService(
+                sp.GetRequiredService<IGeometryProvider>(),
+                sp.GetService<IMonitorIdentityProvider>()));
+
         return services;
     }
 }
+

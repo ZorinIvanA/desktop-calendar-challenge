@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DesktopCalendar.Core\DesktopCalendar.Core.csproj" />
+    <ProjectReference Include="..\..\src\DesktopCalendar.Platform.Linux\DesktopCalendar.Platform.Linux.csproj" />
   </ItemGroup>
 
 </Project>

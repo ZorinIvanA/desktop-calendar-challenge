@@ -1,4 +1,5 @@
 using DesktopCalendar.Core.Contracts;
+using DesktopCalendar.Core.Platform;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DesktopCalendar.Platform.Linux;
@@ -6,13 +7,14 @@ namespace DesktopCalendar.Platform.Linux;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Регистрирует Linux-реализации IMonitorService / IWallpaperService / IAutorunService.
-    /// Вызывать только при OperatingSystem.IsLinux(). В M1 все реализации — заглушки;
-    /// конкретный DE (GNOME и т.д.) определяется через DesktopEnvironment.Detect() в M4.
+    /// Регистрирует Linux-реализации: IMonitorIdentityProvider (GNOME Mutter D-Bus),
+    /// IWallpaperService (M4), IAutorunService (M6).
+    /// IMonitorService (композитор) и IGeometryProvider (Avalonia) регистрируются в Core/UI.
     /// </summary>
     public static IServiceCollection AddLinux(this IServiceCollection services)
     {
-        services.AddSingleton<IMonitorService, LinuxMonitorService>();
+        services.AddSingleton<MutterDisplayConfig>();
+        services.AddSingleton<IMonitorIdentityProvider, LinuxMonitorIdentityProvider>();
         services.AddSingleton<IWallpaperService, LinuxWallpaperService>();
         services.AddSingleton<IAutorunService, LinuxAutorunService>();
         return services;

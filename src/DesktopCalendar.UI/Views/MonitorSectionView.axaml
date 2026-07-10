@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:DesktopCalendar.UI.ViewModels"
+             xmlns:v="using:DesktopCalendar.UI.Views"
+             x:Class="DesktopCalendar.UI.Views.MonitorSectionView"
+            x:Name="Self">
+
+    <UserControl.Styles>
+        <!-- Дружелюбный стиль кнопок-мониторов -->
+        <Style Selector="Button.monitor">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="#33000000" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16">
+
+            <TextBlock Text="Монитор" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="Выберите монитор, на рабочем столе которого будет отображаться календарь."
+                       Foreground="Gray" TextWrapping="Wrap" />
+
+            <!-- Предупреждение про per-screen limitation в GNOME -->
+            <Border IsVisible="{Binding IsGnomeWarningVisible}"
+                    Background="#FFFCE8B2" BorderBrush="#FFE0A800" BorderThickness="1"
+                    CornerRadius="6" Padding="12">
+                <StackPanel Spacing="4">
+                    <TextBlock FontWeight="SemiBold" Text="Ограничение GNOME" />
+                    <TextBlock TextWrapping="Wrap"
+                               Text="GNOME хранит единый URI обоев на сессию и не поддерживает разные обои на разных мониторах. Календарь будет применён к общему фону и визуально привязан к выбранному монитору." />
+                </StackPanel>
+            </Border>
+
+            <!-- Схема мониторов: Canvas фиксированного размера, позиции через конвертеры. -->
+            <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="8" Background="#22000000"
+                    HorizontalAlignment="Stretch">
+                <ItemsControl ItemsSource="{Binding Monitors}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Width="700" Height="280" HorizontalAlignment="Center" ClipToBounds="True" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:MonitorViewModel">
+                            <Button Classes="monitor"
+                                    Command="{Binding #Self.DataContext.SelectMonitorCommand}"
+                                    CommandParameter="{Binding}"
+                                    BorderBrush="{Binding IsSelected, Converter={x:Static v:SelectionToBrushConverter.Instance}}"
+                                    Canvas.Left="{Binding NormX, Converter={x:Static v:NormToPixelConverter.Instance}, ConverterParameter=700}"
+                                    Canvas.Top="{Binding NormY, Converter={x:Static v:NormToPixelConverter.Instance}, ConverterParameter=280}"
+                                    Width="{Binding NormWidth, Converter={x:Static v:NormSizeToPixelConverter.Instance}, ConverterParameter=700}"
+                                    Height="{Binding NormHeight, Converter={x:Static v:NormSizeToPixelConverter.Instance}, ConverterParameter=280}">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="{Binding LogicalIndex}" FontSize="22" FontWeight="Bold"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding ResolutionLabel}" FontSize="12" HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding FriendlyName}" FontSize="10" HorizontalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+
+            <TextBlock Text="{Binding StatusMessage}" Foreground="Gray" />
+
+            <!-- Детали выбранного монитора -->
+            <Border IsVisible="{Binding SelectedMonitor, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    CornerRadius="8" Padding="16">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Выбранный монитор" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="№ " Foreground="Gray" />
+                        <TextBlock Text="{Binding SelectedMonitor.LogicalIndex}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Идентификатор: " Foreground="Gray" />
+                        <TextBlock Text="{Binding SelectedMonitor.Id}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Разрешение: " Foreground="Gray" />
+                        <TextBlock Text="{Binding SelectedMonitor.ResolutionLabel}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
