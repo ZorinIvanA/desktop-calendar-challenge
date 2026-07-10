@@ -37,26 +37,34 @@
                 </StackPanel>
             </Border>
 
-            <!-- Схема мониторов: Canvas фиксированного размера, позиции через конвертеры. -->
+            <!-- Схема мониторов: Canvas 660×360. Координаты/размеры прямоугольников — абсолютные,
+                 рассчитанные во MonitorViewModel с сохранением aspect ratio виртуального десктопа. -->
             <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
                     BorderThickness="1" CornerRadius="8" Padding="8" Background="#22000000"
-                    HorizontalAlignment="Stretch">
-                <ItemsControl ItemsSource="{Binding Monitors}">
+                    HorizontalAlignment="Center">
+                <ItemsControl ItemsSource="{Binding Monitors}" Width="660" Height="360">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas Width="700" Height="280" HorizontalAlignment="Center" ClipToBounds="True" />
+                            <Canvas Width="660" Height="360" HorizontalAlignment="Center" ClipToBounds="True" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
+                    <!-- Canvas позиционирует своих прямых детей (ContentPresenter-контейнеры item'ов),
+                         поэтому Canvas.Left/Top вешаем на контейнер через ItemContainerTheme,
+                         а НЕ на Button внутри (иначе все кнопки на (0,0)). -->
+                    <ItemsControl.ItemContainerTheme>
+                        <ControlTheme x:DataType="vm:MonitorViewModel" TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding CanvasX}" />
+                            <Setter Property="Canvas.Top" Value="{Binding CanvasY}" />
+                        </ControlTheme>
+                    </ItemsControl.ItemContainerTheme>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:MonitorViewModel">
                             <Button Classes="monitor"
                                     Command="{Binding #Self.DataContext.SelectMonitorCommand}"
                                     CommandParameter="{Binding}"
                                     BorderBrush="{Binding IsSelected, Converter={x:Static v:SelectionToBrushConverter.Instance}}"
-                                    Canvas.Left="{Binding NormX, Converter={x:Static v:NormToPixelConverter.Instance}, ConverterParameter=700}"
-                                    Canvas.Top="{Binding NormY, Converter={x:Static v:NormToPixelConverter.Instance}, ConverterParameter=280}"
-                                    Width="{Binding NormWidth, Converter={x:Static v:NormSizeToPixelConverter.Instance}, ConverterParameter=700}"
-                                    Height="{Binding NormHeight, Converter={x:Static v:NormSizeToPixelConverter.Instance}, ConverterParameter=280}">
+                                    Width="{Binding CanvasWidth}"
+                                    Height="{Binding CanvasHeight}">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
                                     <TextBlock Text="{Binding LogicalIndex}" FontSize="22" FontWeight="Bold"
                                                HorizontalAlignment="Center" />
