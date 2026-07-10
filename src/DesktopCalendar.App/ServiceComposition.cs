@@ -1,4 +1,6 @@
 using DesktopCalendar.Core;
+using DesktopCalendar.Core.Contracts;
+using DesktopCalendar.Core.Logging;
 using DesktopCalendar.Platform.Linux;
 using DesktopCalendar.Platform.Windows;
 using DesktopCalendar.UI;
@@ -41,6 +43,15 @@ internal static class ServiceComposition
         {
             // macOS и прочее — вне scope ТЗ. Контракты не зарегистрированы;
             // любой их запрос упадёт при резолве, что приемлемо для неподдерживаемой ОС.
+        }
+
+        // Файловый логгер добавляем после AddCore (нужен IPlatformPaths).
+        // Покрывает в первую очередь silent-режим (-auto), где нет консоли.
+        var sp = services.BuildServiceProvider();
+        var paths = sp.GetService<IPlatformPaths>();
+        if (paths is not null)
+        {
+            services.AddLogging(b => b.AddProvider(new FileLoggerProvider(paths.LogFile)));
         }
 
         return services.BuildServiceProvider();

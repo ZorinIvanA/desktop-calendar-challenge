@@ -14,7 +14,7 @@ namespace DesktopCalendar.Core.Wallpaper;
 /// при смене обоев пользователем извне — автоматически подхватываем новый оригинал.
 /// Cleanup: после apply удаляем все прежние сгенерированные файлы этого монитора.
 /// </summary>
-public sealed class WallpaperApplier
+public class WallpaperApplier
 {
     private readonly IWallpaperService _wallpaper;
     private readonly IMonitorService _monitors;
@@ -34,11 +34,17 @@ public sealed class WallpaperApplier
     }
 
     /// <summary>Применить календарь на рабочий стол выбранного монитора.</summary>
-    public void Apply(string monitorId, AppSettings settings, DateOnly today, double renderDpi = 96.0)
+    public virtual void Apply(string monitorId, AppSettings settings, DateOnly today, double renderDpi = 96.0)
     {
-        var monitor = _monitors.GetById(monitorId)
-            ?? throw new InvalidOperationException(
-                $"Монитор '{monitorId}' не найден. Возможно, он был отключён.");
+        // Разрешение: из настроек (сохраняется при выборе в UI), иначе из IMonitorService.
+        // Это позволяет silent-режиму работать без Avalonia (окно не создано → Screens недоступен).
+        var monitor = _monitors.GetById(monitorId);
+        int width = settings.LastMonitorWidth ?? monitor?.ResolutionWidth
+                    ?? throw new InvalidOperationException(
+                        $"Разрешение монитора '{monitorId}' неизвестно. Выберите монитор в UI.");
+        int height = settings.LastMonitorHeight ?? monitor?.ResolutionHeight
+                    ?? throw new InvalidOperationException(
+                        $"Разрешение монитора '{monitorId}' неизвестно. Выберите монитор в UI.");
 
         var snapshot = _wallpaper.GetCurrent(monitorId);
         bool externalChange = !snapshot.HasCalendar
@@ -58,8 +64,7 @@ public sealed class WallpaperApplier
         // 3. Загрузить оригинал, привести к размеру монитора.
         using var originalBmp = LoadOriginalOrDefault(originalPath);
         WallpaperFit fit = settings.OriginalFit ?? WallpaperFit.Fill;
-        using var monitorCanvas = BackgroundFitter.FitToMonitor(
-            originalBmp, monitor.ResolutionWidth, monitor.ResolutionHeight, fit);
+        using var monitorCanvas = BackgroundFitter.FitToMonitor(originalBmp, width, height, fit);
 
         // 4. Рендер календаря поверх.
         using var renderer = new CalendarRenderer(today.Year, today.Month, today);

@@ -8,13 +8,13 @@
 
             <TextBlock Text="Общие" FontSize="22" FontWeight="SemiBold" />
 
-            <!-- Автозапуск (дизейблен до M6) -->
+            <!-- Автозапуск -->
             <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
                     CornerRadius="8" Padding="14">
                 <StackPanel Spacing="6">
-                    <CheckBox Content="Запускать вместе с системой (M6)"
-                              IsChecked="{Binding Autorun}" IsEnabled="False" />
-                    <TextBlock Text="Автозагрузка будет реализована в M6. Чекбокс показан для целостности интерфейса."
+                    <CheckBox Content="Запускать вместе с системой"
+                              IsChecked="{Binding AutorunEnabled}" />
+                    <TextBlock Text="При включении добавляет запись в автозагрузку ОС (с ключом -auto): ежедневно обновляет календарь при входе в систему."
                                Foreground="Gray" TextWrapping="Wrap" FontSize="11" />
                 </StackPanel>
             </Border>

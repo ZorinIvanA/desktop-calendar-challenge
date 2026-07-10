@@ -68,6 +68,10 @@ public sealed class AppSettings
     /// <summary>Когда последний раз применяли календарь (UTC).</summary>
     public DateTime? LastAppliedUtc { get; set; }
 
+    /// <summary>Разрешение выбранного монитора на момент выбора (для silent-режима без UI/Avalonia).</summary>
+    public int? LastMonitorWidth { get; set; }
+    public int? LastMonitorHeight { get; set; }
+
     /// <summary>Сохранённый режим растяжения ОС для восстановления при "Убрать календарь".</summary>
     public WallpaperFit? OriginalFit { get; set; }
 }

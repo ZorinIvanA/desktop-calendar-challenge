@@ -64,16 +64,22 @@ public partial class MonitorSectionViewModel : ObservableObject
         }
     }
 
-    /// <summary>Команда выбора монитора пользователем (клик по прямоугольнику в схеме).</summary>
-    [RelayCommand]
-    private void SelectMonitor(MonitorViewModel? monitor)
-    {
-        if (monitor is null) return;
+        /// <summary>Команда выбора монитора пользователем (клик по прямоугольнику в схеме).</summary>
+        [RelayCommand]
+        private void SelectMonitor(MonitorViewModel? monitorVm)
+        {
+            if (monitorVm is null) return;
+            // monitorVm — это UI-обёртка; найдём исходный MonitorInfo для разрешения.
+            var info = _monitorService.GetById(monitorVm.Id);
+            if (info is null) return;
 
-        foreach (var m in Monitors) m.IsSelected = false;
-        monitor.IsSelected = true;
-        SelectedMonitor = monitor;
-        // Пишем через SettingsViewModel — это поднимет Changed и обновит превью + HasCalendar.
-        _settings.TargetMonitorId = monitor.Id;
-    }
+            foreach (var m in Monitors) m.IsSelected = false;
+            monitorVm.IsSelected = true;
+            SelectedMonitor = monitorVm;
+            // Пишем через SettingsViewModel — это поднимет Changed и обновит превью + HasCalendar.
+            _settings.TargetMonitorId = info.Id;
+            // Сохраняем разрешение — нужно silent-режиму (без UI/Avalonia) для рендера.
+            _settings.Raw.LastMonitorWidth = info.ResolutionWidth;
+            _settings.Raw.LastMonitorHeight = info.ResolutionHeight;
+        }
 }

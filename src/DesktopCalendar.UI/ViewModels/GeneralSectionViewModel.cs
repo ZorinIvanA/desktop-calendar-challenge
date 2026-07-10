@@ -15,26 +15,77 @@ public partial class GeneralSectionViewModel : ObservableObject
     private readonly SettingsViewModel _settings;
     private readonly WallpaperApplier _applier;
     private readonly IWallpaperService _wallpaper;
+    private readonly IAutorunService _autorun;
     private readonly ILogger<GeneralSectionViewModel> _logger;
 
     public GeneralSectionViewModel(
         SettingsViewModel settings,
         WallpaperApplier applier,
         IWallpaperService wallpaper,
+        IAutorunService autorun,
         ILogger<GeneralSectionViewModel> logger)
     {
         _settings = settings;
         _applier = applier;
         _wallpaper = wallpaper;
+        _autorun = autorun;
         _logger = logger;
     }
 
-    /// <summary>Инициализация после создания окна. Запрашивает текущее состояние обоев.</summary>
-    public void Initialize() => RefreshHasCalendar();
+    /// <summary>Инициализация после создания окна. Запрашивает текущее состояние обоев и авторана.</summary>
+    public void Initialize()
+    {
+        RefreshHasCalendar();
+        RefreshAutorun();
+    }
 
     [ObservableProperty] private bool _hasCalendar;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string _statusMessage = string.Empty;
+
+    [ObservableProperty] private bool _autorunEnabled;
+    partial void OnAutorunEnabledChanged(bool value)
+    {
+        // Синхронизируем чекбокс с ОС. Инициализация (RefreshAutorun) не должна дёргать Enable/Disable —
+        // для этого используем флаг.
+        if (_suppressAutorunSync) return;
+        try
+        {
+            var exe = Environment.ProcessPath;
+            if (string.IsNullOrEmpty(exe))
+            {
+                StatusMessage = "Не удалось определить путь к приложению для авторана.";
+                return;
+            }
+            if (value) _autorun.Enable(exe, "-auto");
+            else _autorun.Disable();
+            StatusMessage = value ? "Авторан включён." : "Авторан выключен.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Autorun toggle failed");
+            StatusMessage = $"Ошибка авторана: {ex.Message}";
+        }
+    }
+    private bool _suppressAutorunSync;
+
+    /// <summary>Прочитать реальное состояние авторана из ОС (без побочных эффектов).</summary>
+    public void RefreshAutorun()
+    {
+        _suppressAutorunSync = true;
+        try
+        {
+            AutorunEnabled = _autorun.IsEnabled();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Autorun IsEnabled failed");
+        }
+        finally
+        {
+            _suppressAutorunSync = false;
+        }
+    }
 
     /// <summary>Монитор выбран → можно применять.</summary>
     public bool CanApply => !string.IsNullOrEmpty(_settings.TargetMonitorId);

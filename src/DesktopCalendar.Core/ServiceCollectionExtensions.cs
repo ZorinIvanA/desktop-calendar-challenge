@@ -49,6 +49,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<Fonts.IFontCatalog, Fonts.SkiaFontCatalog>();
         services.AddSingleton<Wallpaper.PreviewRenderer>();
 
+        // M6: silent-режим (AutoUpdateService) + идемпотентность.
+        services.AddSingleton<Wallpaper.AutoUpdateService>();
+
         return services;
     }
 }

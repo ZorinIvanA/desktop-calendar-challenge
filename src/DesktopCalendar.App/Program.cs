@@ -17,21 +17,38 @@ rootCommand.AddOption(autoOption);
 
 rootCommand.SetHandler((bool auto) =>
 {
-    // Handler ничего не возвращает, поэтому код выхода кладём в Environment.ExitCode.
-    Environment.ExitCode = auto
-        ? RunAuto()
-        : RunUi();
+    Environment.ExitCode = auto ? RunAuto() : RunUi();
 }, autoOption);
 
-return await rootCommand.InvokeAsync(args);
+await rootCommand.InvokeAsync(args);
+return Environment.ExitCode;
 
 // ----------------------------- handlers -----------------------------
 
 static int RunAuto()
 {
-    // M1: каркас под M6. Реальный silent-пайплайн (применить календарь → выйти) появится в M6.
-    Console.WriteLine("auto mode not implemented yet (see M6).");
-    return 0;
+    // Silent-режим M6: без UI, применяет календарь к рабочему столу и выходит.
+    var services = ServiceComposition.Build();
+    try
+    {
+        var auto = services.GetRequiredService<DesktopCalendar.Core.Wallpaper.AutoUpdateService>();
+        var code = auto.Run();
+        // DebouncedSettingsStore пишет отложенно — форсируем flush перед выходом,
+        // иначе LastAppliedUtc/LastGeneratedPath не сохранятся (процесс завершится раньше таймера).
+        if (services.GetService(typeof(DesktopCalendar.Core.Settings.DebouncedSettingsStore))
+            is DesktopCalendar.Core.Settings.DebouncedSettingsStore debounced)
+        {
+            debounced.Flush();
+        }
+        return code;
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Auto mode failed to start.");
+        Console.Error.WriteLine($"Fatal: {ex}");
+        return DesktopCalendar.Core.Wallpaper.AutoUpdateService.ExitError;
+    }
 }
 
 static int RunUi()
