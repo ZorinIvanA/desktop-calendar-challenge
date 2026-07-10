@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:DesktopCalendar.UI.ViewModels"
+        x:Class="DesktopCalendar.UI.Views.MainWindow"
+        Title="Desktop Calendar"
+        Width="560" Height="540"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="12">
+            <TextBlock Text="Desktop Calendar"
+                       FontSize="24" FontWeight="SemiBold" />
+            <TextBlock Text="M1 — диагностический экран. Настройки ниже загружены из settings.json."
+                       Foreground="Gray" TextWrapping="Wrap" />
+
+            <Border Classes="Card" Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    CornerRadius="8" Padding="16" Margin="0,8,0,0">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Целевой монитор:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TargetMonitorId}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Привязка (Anchor):" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Anchor}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Отступ (MarginPx):" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MarginPx}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Шрифт:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FontFamily}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Размер шрифта:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding FontSize}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Цвет: месяц:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ColorMonth}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Цвет: дни недели:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding ColorWeekday}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Цвет: дни:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding ColorDay}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Цвет: сегодня:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding ColorToday}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Цвет: выходные:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ColorWeekend}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Соседние дни:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding OtherMonthMode}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Положение подписей:" FontWeight="SemiBold" Margin="0,0,12,6" />
+                    <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding LabelsPosition}" Margin="0,0,0,6" />
+
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="В автозагрузке:" FontWeight="SemiBold" Margin="0,0,12,0" />
+                    <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding Autorun}" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

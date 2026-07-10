@@ -1,0 +1,22 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+
+# IDE / editor
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.swp
+
+# Avalonia / dotnet
+*.dll.config
+*.pdb
+*.cache
+TestResults/
+
+# OS junk
+.DS_Store
+Thumbs.db
