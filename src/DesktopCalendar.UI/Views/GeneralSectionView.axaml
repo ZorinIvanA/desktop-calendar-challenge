@@ -47,6 +47,18 @@
                 </StackPanel>
             </Border>
 
+            <!-- Диагностика -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+                    CornerRadius="8" Padding="14">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Диагностика" FontWeight="SemiBold" />
+                    <Button Content="Открыть папку данных"
+                            Command="{Binding OpenDataFolderCommand}" />
+                    <TextBlock Text="Здесь хранятся настройки, сохранённые оригиналы обоев и сгенерированные файлы."
+                               Foreground="Gray" TextWrapping="Wrap" FontSize="11" />
+                </StackPanel>
+            </Border>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

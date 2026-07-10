@@ -13,6 +13,7 @@ namespace DesktopCalendar.Core.Contracts;
 /// <param name="ResolutionWidth">Физическое разрешение по X.</param>
 /// <param name="ResolutionHeight">Физическое разрешение по Y.</param>
 /// <param name="IsPrimary">Первичный ли монитор (содержит (0,0) виртуального десктопа).</param>
+/// <param name="Scaling">DPI-scaling монитора (1.0 = 96 dpi, 2.0 = 192 dpi). Для pt→px перевода.</param>
 public sealed record MonitorInfo(
     string Id,
     int LogicalIndex,
@@ -23,4 +24,5 @@ public sealed record MonitorInfo(
     int BoundsHeight,
     int ResolutionWidth,
     int ResolutionHeight,
-    bool IsPrimary = false);
+    bool IsPrimary = false,
+    double Scaling = 1.0);

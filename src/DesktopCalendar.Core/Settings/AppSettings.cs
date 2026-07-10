@@ -72,6 +72,9 @@ public sealed class AppSettings
     public int? LastMonitorWidth { get; set; }
     public int? LastMonitorHeight { get; set; }
 
+    /// <summary>DPI-scaling выбранного монитора (1.0=96dpi, 2.0=192dpi). Для pt→px в silent-режиме.</summary>
+    public double? LastMonitorScaling { get; set; }
+
     /// <summary>Сохранённый режим растяжения ОС для восстановления при "Убрать календарь".</summary>
     public WallpaperFit? OriginalFit { get; set; }
 }

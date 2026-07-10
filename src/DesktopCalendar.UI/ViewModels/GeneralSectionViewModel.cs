@@ -16,6 +16,7 @@ public partial class GeneralSectionViewModel : ObservableObject
     private readonly WallpaperApplier _applier;
     private readonly IWallpaperService _wallpaper;
     private readonly IAutorunService _autorun;
+    private readonly IPlatformPaths _paths;
     private readonly ILogger<GeneralSectionViewModel> _logger;
 
     public GeneralSectionViewModel(
@@ -23,12 +24,14 @@ public partial class GeneralSectionViewModel : ObservableObject
         WallpaperApplier applier,
         IWallpaperService wallpaper,
         IAutorunService autorun,
+        IPlatformPaths paths,
         ILogger<GeneralSectionViewModel> logger)
     {
         _settings = settings;
         _applier = applier;
         _wallpaper = wallpaper;
         _autorun = autorun;
+        _paths = paths;
         _logger = logger;
     }
 
@@ -181,4 +184,24 @@ public partial class GeneralSectionViewModel : ObservableObject
 
     private bool CanApplyNow() => CanApply && !IsBusy && !HasCalendar;
     private bool CanRemoveNow() => CanApply && !IsBusy && HasCalendar;
+
+    /// <summary>Открыть каталог данных приложения в файловом менеджере ОС.</summary>
+    [RelayCommand]
+    private void OpenDataFolder()
+    {
+        try
+        {
+            // UseShellExecute=true открывает путь ассоциированным приложением (проводник/Files).
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = _paths.AppDataDir,
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "OpenDataFolder failed");
+            StatusMessage = $"Не удалось открыть папку: {ex.Message}";
+        }
+    }
 }

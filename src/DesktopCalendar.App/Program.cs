@@ -56,6 +56,17 @@ static int RunUi()
     var services = ServiceComposition.Build();
     DesktopCalendar.UI.App.ConfigureServices(services);
 
+    // Один экземпляр GUI: второй запуск выходит молча с логом (M7).
+    var paths = services.GetService<DesktopCalendar.Core.Contracts.IPlatformPaths>();
+    using var guard = new DesktopCalendar.Core.Platform.SingleInstanceGuard(paths?.AppDataDir ?? "/tmp");
+    if (!guard.TryAcquire())
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning("Another instance is already running, exiting.");
+        Console.Out.WriteLine("Desktop Calendar уже запущен.");
+        return 0;
+    }
+
     try
     {
         AppBuilder.Configure<DesktopCalendar.UI.App>()

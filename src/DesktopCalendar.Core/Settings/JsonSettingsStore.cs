@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace DesktopCalendar.Core.Settings;
@@ -13,6 +14,8 @@ public sealed class JsonSettingsStore : ISettingsStore
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        // Enum как строки — settings.json человекочитаемый ("anchor": "BottomRight" вместо 7).
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
 
     private readonly string _filePath;
@@ -31,7 +34,7 @@ public sealed class JsonSettingsStore : ISettingsStore
             if (!File.Exists(_filePath))
             {
                 _logger.LogInformation("Settings file not found, using defaults: {Path}", _filePath);
-                return new AppSettings();
+                return CreateDefaults();
             }
 
             var json = File.ReadAllText(_filePath);
@@ -39,16 +42,22 @@ public sealed class JsonSettingsStore : ISettingsStore
             if (settings is null)
             {
                 _logger.LogWarning("Settings file deserialized to null, using defaults: {Path}", _filePath);
-                return new AppSettings();
+                return CreateDefaults();
             }
             return settings;
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to read settings, using defaults: {Path}", _filePath);
-            return new AppSettings();
+            return CreateDefaults();
         }
     }
+
+    /// <summary>Дефолтные настройки с OS-специфичным шрифтом (для первого запуска).</summary>
+    private static AppSettings CreateDefaults() => new()
+    {
+        FontFamily = DesktopCalendar.Core.Platform.PlatformDefaults.DefaultFontFamily,
+    };
 
     public void Save(AppSettings settings)
     {

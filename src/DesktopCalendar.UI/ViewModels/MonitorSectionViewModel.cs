@@ -81,5 +81,6 @@ public partial class MonitorSectionViewModel : ObservableObject
             // Сохраняем разрешение — нужно silent-режиму (без UI/Avalonia) для рендера.
             _settings.Raw.LastMonitorWidth = info.ResolutionWidth;
             _settings.Raw.LastMonitorHeight = info.ResolutionHeight;
+            _settings.Raw.LastMonitorScaling = info.Scaling;
         }
 }

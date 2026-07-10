@@ -33,8 +33,10 @@ public class WallpaperApplier
         _logger = logger;
     }
 
-    /// <summary>Применить календарь на рабочий стол выбранного монитора.</summary>
-    public virtual void Apply(string monitorId, AppSettings settings, DateOnly today, double renderDpi = 96.0)
+    /// <summary>Применить календарь на рабочий стол выбранного монитора.
+    /// renderDpi: если null — вычисляется из scaling монитора (96 * scaling), чтобы календарь
+    /// имел одинаковый визуальный размер на HiDPI-дисплеях.</summary>
+    public virtual void Apply(string monitorId, AppSettings settings, DateOnly today, double? renderDpi = null)
     {
         // Разрешение: из настроек (сохраняется при выборе в UI), иначе из IMonitorService.
         // Это позволяет silent-режиму работать без Avalonia (окно не создано → Screens недоступен).
@@ -45,6 +47,10 @@ public class WallpaperApplier
         int height = settings.LastMonitorHeight ?? monitor?.ResolutionHeight
                     ?? throw new InvalidOperationException(
                         $"Разрешение монитора '{monitorId}' неизвестно. Выберите монитор в UI.");
+
+        // DPI: явный параметр, иначе 96 * scaling монитора (из настроек или геометрии).
+        double scaling = settings.LastMonitorScaling ?? monitor?.Scaling ?? 1.0;
+        double effectiveDpi = renderDpi ?? (96.0 * scaling);
 
         var snapshot = _wallpaper.GetCurrent(monitorId);
         bool externalChange = !snapshot.HasCalendar
@@ -68,7 +74,7 @@ public class WallpaperApplier
 
         // 4. Рендер календаря поверх.
         using var renderer = new CalendarRenderer(today.Year, today.Month, today);
-        using var withCalendar = renderer.Render(monitorCanvas, settings, renderDpi);
+        using var withCalendar = renderer.Render(monitorCanvas, settings, effectiveDpi);
 
         // 5. Сохранить результат.
         var now = DateTime.UtcNow;

@@ -152,7 +152,7 @@ public sealed class AutoUpdateServiceTests : IDisposable
     {
         public int ApplyCalls;
         public CountingApplier() : base(null!, null!, null!, NullLogger<WallpaperApplier>.Instance) { }
-        public override void Apply(string monitorId, AppSettings settings, DateOnly today, double renderDpi = 96.0)
+        public override void Apply(string monitorId, AppSettings settings, DateOnly today, double? renderDpi = null)
             => ApplyCalls++;
     }
 

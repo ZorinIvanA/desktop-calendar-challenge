@@ -38,7 +38,8 @@ public sealed class JsonSettingsStoreTests : IDisposable
         loaded.Should().NotBeNull();
         loaded.Anchor.Should().Be(Anchor.BottomRight);
         loaded.MarginPx.Should().Be(32);
-        loaded.FontFamily.Should().Be("Segoe UI");
+        // Дефолт шрифта зависит от ОС (M7): Win=Segoe UI, Linux=DejaVu Sans.
+        loaded.FontFamily.Should().Be(DesktopCalendar.Core.Platform.PlatformDefaults.DefaultFontFamily);
         loaded.FontSize.Should().Be(28);
         loaded.ColorMonth.Should().Be(PresetColor.White);
         loaded.ColorToday.Should().BeNull();

@@ -121,7 +121,8 @@ public sealed class MonitorService : IMonitorService
             BoundsHeight: screen.Bounds.Height,
             ResolutionWidth: screen.Bounds.Width,
             ResolutionHeight: screen.Bounds.Height,
-            IsPrimary: screen.IsPrimary);
+            IsPrimary: screen.IsPrimary,
+            Scaling: screen.Scaling);
     }
 
     private static string BuildFriendlyName(string? connector, string? displayName, int index, ScreenGeometry screen)
